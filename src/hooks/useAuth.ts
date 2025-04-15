@@ -5,7 +5,7 @@ export function useAuth() {
         const { id, email } = useTypedSelector((state) =>  state.user);
 
     return {
-        idAuth: !!email,
+        isAuth: !!email,
         email,
         id
     }

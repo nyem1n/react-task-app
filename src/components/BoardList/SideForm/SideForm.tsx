@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState, FC } from 'react'
 import { FiCheck } from 'react-icons/fi';
 import { icon, input, sideForm } from './SideForm.css';
 import { useTypedDispatch } from '../../../hooks/redux';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, v4 } from 'uuid';
 import { addBoard } from '../../../store/slices/boardSlice';
 import { addLog } from '../../../store/slices/loggerSlice';
 
@@ -13,7 +13,7 @@ type TSideFormProps = {
 
 const SideForm : FC<TSideFormProps> = ({
     setIsFormOpen,
-    inputRef
+    // inputRef
 }) => {
 
     const [inputText, setInputText] = useState('');
@@ -40,7 +40,7 @@ const SideForm : FC<TSideFormProps> = ({
 
             dispatch(
                 addLog({
-                    logId : uuidv4,
+                    logId : v4(),
                     logMessage : `게시판 등록 : ${inputText}`,
                     logAuthor : "User",
                     logTimestamp : String(Date.now()),

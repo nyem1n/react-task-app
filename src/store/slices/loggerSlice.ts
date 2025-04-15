@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ILogItem } from "../../types";
+
 
 type loggerState = {
     logArray : ILogItem[]

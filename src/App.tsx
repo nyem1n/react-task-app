@@ -9,7 +9,7 @@ import LoggerModal from './components/LoggerModal/LoggerModal';
 import { deleteBoard } from './store/slices/boardSlice';
 import { v4 } from 'uuid';
 import { addLog } from './store/slices/loggerSlice';
-import { DragDropContext } from 'react-beautiful-dnd'
+import { DragDropContext, DropResult } from 'react-beautiful-dnd'
 import { sort } from './store/slices/boardSlice';
 
 
@@ -57,7 +57,7 @@ function App() {
     }
   }
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
     const sourceList = lists.filter(
