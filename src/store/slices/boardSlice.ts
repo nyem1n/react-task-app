@@ -26,6 +26,25 @@ type TAddTaskAction = {
     task: ITask;
 }
 
+type TDeleteTaskAction = {
+    boardId: string;
+    listId: string;
+    taskId: string;
+}
+
+type TDeleteBoardAction = {
+    boardId: string;
+}
+
+type TSortAction = {
+    boardIndex: number;
+    droppableIdStart: string;
+    droppableIdEnd: string;
+    droppableIndexStart: number;
+    droppableIndexEnd: number;
+    draggableId: string;
+}
+
 const initialState : TBoardsState = {
     modalActive : false,
     boardArray : [
@@ -84,6 +103,12 @@ const boardsSlice = createSlice({
             state.boardArray.push(payload.board)
         },
 
+        deleteBoard: (state, {payload} : PayloadAction<TDeleteBoardAction>) => {
+            state.boardArray = state.boardArray.filter(
+                board => board.boardId !== payload.boardId
+            )
+        },
+
         addList: (state, {payload}: PayloadAction<TAddListAction>) => {
             state.boardArray.map(board => 
                 board.boardId === payload.boardId
@@ -109,6 +134,54 @@ const boardsSlice = createSlice({
             )
         },
 
+        updateTask: (state, {payload} : PayloadAction<TAddTaskAction>) => {
+                state.boardArray = state.boardArray.map(board =>
+                    board.boardId === payload.boardId
+                    ?
+                    {
+                        ...board,
+                        lists: board.lists.map(list => 
+                            list.listId === payload.listId
+                            ?
+                                {
+                                    ...list,
+                                    tasks: list.tasks.map(task =>
+                                        task.taskId === payload.task.taskId
+                                        ? payload.task
+                                        : task
+                                    )
+                                }
+                            :
+                            list
+                        )
+                    }
+                    :
+                    board
+                )
+        },
+
+        deleteTask: (state, {payload} : PayloadAction<TDeleteTaskAction>) => {
+                state.boardArray = state.boardArray.map(board => 
+                    board.boardId === payload.boardId
+                    ?
+                        {
+                            ...board,
+                            lists: board.lists.map(list =>
+                                list.listId === payload.listId
+                                ? {
+                                    ...list,
+                                    task: list.tasks.filter(
+                                        task => task.taskId !== payload.taskId
+                                    )
+                                }
+                                : list
+                            )
+                        }
+                    :
+                    board
+                )
+        },
+
         deleteList: (state, {payload} : PayloadAction<TDeleteListAction>) => {
                 state.boardArray = state.boardArray.map(
                     board =>
@@ -124,11 +197,35 @@ const boardsSlice = createSlice({
                     board
                 )
         },
+
         setModalActive : (state, {payload}: PayloadAction<boolean>) => {
             state.modalActive = payload
+        },
+
+        sort: (state, {payload}: PayloadAction<TSortAction>) => {
+            if(payload.droppableIdStart === payload.droppableIdEnd) {
+                const list = state.boardArray[payload.boardIndex].lists.find(
+                    list => list.listId === payload.droppableIdStart
+                )
+
+                const card = list?.tasks.splice(payload.droppableIndexStart, 1);
+                    list?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+            }
+
+            if(payload.droppableIdStart !== payload.droppableIdEnd) {
+                const listStart = state.boardArray[payload.boardIndex].lists.find(
+                    list => list.listId === payload.droppableIdStart
+                )
+
+                const card = listStart!.tasks.splice(payload.droppableIndexStart, 1);
+                const listEnd = state.boardArray[payload.boardIndex].lists.find(
+                    list => list.listId === payload.droppableIdEnd
+                )
+                listEnd?.tasks.splice(payload.droppableIndexEnd, 0, ...card);
+            }
         }
     }
 })
 
-export const { addBoard, deleteList, setModalActive, addList, addTask } = boardsSlice.actions;
+export const { sort, addBoard, deleteList, setModalActive, addList, addTask, deleteTask, updateTask, deleteBoard } = boardsSlice.actions;
 export const boardsReducer = boardsSlice.reducer;
